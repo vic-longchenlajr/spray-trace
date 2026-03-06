@@ -89,7 +89,7 @@ export default function Settings() {
 
       {/* About */}
       <section className="mt-6 text-sm text-text-muted">
-        <p>SprayTrace v1.0.0 — Deflector Distribution Tracker</p>
+        <p>SprayTrace v{__APP_VERSION__} — Deflector Distribution Tracker</p>
         <p className="mt-1">Data stored locally in your browser (IndexedDB). No data is sent to any server.</p>
       </section>
     </div>

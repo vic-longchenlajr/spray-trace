@@ -34,7 +34,7 @@ export default function AppShell({ children }) {
           ))}
         </nav>
         <div className="p-3 border-t border-border text-xs text-text-muted">
-          v1.0.0
+          v{__APP_VERSION__}
         </div>
       </aside>
       <main className="flex-1 overflow-auto">
