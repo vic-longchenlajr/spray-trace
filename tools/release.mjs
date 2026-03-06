@@ -92,12 +92,22 @@ function rmDirSync(dir) {
   }
 }
 
-function hasUncommittedChanges() {
-  const status = execSync("git status --porcelain -uno", {
-    cwd: PROJECT_ROOT,
+function hasUncommittedChanges(cwd = PROJECT_ROOT) {
+  const status = execSync("git status --porcelain", {
+    cwd,
     encoding: "utf-8",
   }).trim();
   return status.length > 0;
+}
+
+function commitIfNeeded(message, cwd = PROJECT_ROOT) {
+  if (hasUncommittedChanges(cwd)) {
+    run("git add -A", cwd);
+    run(`git commit -m "${message.replace(/"/g, '\\"')}"`, cwd);
+    return true;
+  }
+  console.log("  Nothing to commit — already up to date.");
+  return false;
 }
 
 /* ------------------------------------------------------------------ */
@@ -181,16 +191,12 @@ async function main() {
 
   // 6. Commit + push release repo
   console.log("\n--- Committing release repo ---");
-  run("git add -A", RELEASE_REPO);
-  run(`git commit -m "v${version}: release build"`, RELEASE_REPO);
+  commitIfNeeded(`v${version}: release build`, RELEASE_REPO);
   run("git push", RELEASE_REPO);
 
   // 7. Commit + push source repo (triggers GitHub Pages deploy)
   console.log("\n--- Pushing source repo ---");
-  if (hasUncommittedChanges()) {
-    run("git add -u");
-    run(`git commit -m "v${version}: release"`);
-  }
+  commitIfNeeded(`v${version}: release`, PROJECT_ROOT);
   run("git push", PROJECT_ROOT);
 
   console.log(`\nDone! v${version} released.`);
